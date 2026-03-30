@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>🕌 Community Finance</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#1a7a4a;--gl:#23a063;--gd:#104d2e;
+  --gold:#c9a84c;--gf:#f0cc70;--cream:#fdf8f0;
+  --bg:#f0ede6;--card:#fff;--text:#1a1a2e;--mut:#6b7280;
+  --red:#dc2626;--sh:0 2px 16px rgba(26,122,74,.10);--r:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:480px;margin:0 auto;}
+.screen{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,var(--gd),var(--g) 55%,var(--gl));padding:24px 18px;}
+.screen.active{display:flex;}
+.slogo{font-size:48px;margin-bottom:5px;}
+.stitle{font-family:'Amiri',serif;color:var(--gf);font-size:23px;text-align:center;margin-bottom:3px;}
+.ssub{color:rgba(255,255,255,.7);font-size:12px;margin-bottom:20px;text-align:center;}
+.card{background:#fff;border-radius:var(--r);padding:22px 18px;width:100%;max-width:360px;box-shadow:0 8px 40px rgba(0,0,0,.25);}
+.card h3{color:var(--gd);font-size:15px;margin-bottom:14px;text-align:center;}
+.ig{margin-bottom:12px;}
+.ig label{display:block;font-size:11px;font-weight:800;color:var(--gd);margin-bottom:4px;}
+.ig input,.ig select,.ig textarea{width:100%;padding:10px 12px;border:2px solid #e5e7eb;border-radius:11px;font-family:'Nunito',sans-serif;font-size:13px;color:var(--text);background:var(--cream);outline:none;transition:border-color .2s;}
+.ig input:focus,.ig select:focus,.ig textarea:focus{border-color:var(--g);}
+.btn{width:100%;padding:12px;border:none;border-radius:11px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:opacity .2s;}
+.btn:active{opacity:.85;}
+.btn-g{background:linear-gradient(135deg,var(--g),var(--gl));color:#fff;box-shadow:0 4px 14px rgba(26,122,74,.3);}
+.btn-d{background:var(--gd);color:#fff;margin-top:8px;}
+.btn-wa{background:#25d366;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 0 6px;}
+.err{color:var(--red);font-size:11px;text-align:center;margin-top:7px;display:none;}
+.lnk{text-align:center;color:rgba(255,255,255,.8);font-size:12px;cursor:pointer;text-decoration:underline;margin-top:12px;}
+.tbadge{background:rgba(255,255,255,.15);border-radius:9px;padding:7px 13px;font-size:11px;color:rgba(255,255,255,.9);margin-bottom:14px;text-align:center;}
+
+/* SUB SCREEN */
+.sub-strike{font-size:15px;color:var(--mut);text-decoration:line-through;text-align:center;}
+.sub-price{font-size:32px;font-weight:900;color:var(--gd);text-align:center;margin:3px 0;}
+.sub-tag{background:#fee2e2;color:var(--red);font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:10px;}
+.divider{border:none;border-top:1px solid #e5e7eb;margin:11px 0;}
+.steps{font-size:12px;color:var(--text);line-height:2.1;}
+.steps b{color:var(--gd);}
+
+/* LOADER */
+.loader{display:none;position:fixed;inset:0;background:rgba(255,255,255,.85);z-index:9000;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
+.loader.active{display:flex;}
+.spinner{width:40px;height:40px;border:4px solid #e5e7eb;border-top-color:var(--g);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader p{font-size:13px;font-weight:700;color:var(--gd);}
+
+/* HEADER */
+#mainApp{display:none;}
+.hdr{background:linear-gradient(135deg,var(--gd),var(--g));padding:13px 15px 10px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.15);}
+.hdr h1{font-family:'Amiri',serif;color:var(--gf);font-size:17px;line-height:1.1;}
+.hdr p{color:rgba(255,255,255,.7);font-size:10px;}
+.rb{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.rb.admin{background:var(--gold);color:var(--gd);}
+.rb.viewer{background:#dbeafe;color:#1e40af;}
+.rb.owner{background:#7c3aed;color:#fff;}
+.lbtn{background:rgba(255,255,255,.15);border:none;color:#fff;font-size:15px;cursor:pointer;padding:4px 7px;border-radius:7px;}
+.tbar{padding:6px 13px;font-size:11px;font-weight:700;text-align:center;}
+.tbar.trial{background:#fef3c7;color:#92400e;}
+.tbar.sub{background:#d1fae5;color:#065f46;}
+
+/* TABS */
+.tabs{display:flex;margin:11px 12px 9px;background:var(--card);border-radius:13px;padding:3px;box-shadow:var(--sh);overflow-x:auto;}
+.tb{flex:1;min-width:58px;padding:7px 2px;border:none;background:none;border-radius:9px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;color:var(--mut);cursor:pointer;white-space:nowrap;}
+.tb.active{background:linear-gradient(135deg,var(--g),var(--gl));color:#fff;box-shadow:0 2px 8px rgba(26,122,74,.25);}
+
+/* SECTION */
+.sec{padding:0 12px 80px;}
+.stit{font-size:13px;font-weight:800;color:var(--gd);}
+.abtn{background:var(--g);color:#fff;border:none;border-radius:9px;padding:7px 11px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;cursor:pointer;}
+
+/* CAT CARDS */
+.cc{background:var(--card);border-radius:14px;margin-bottom:10px;box-shadow:var(--sh);overflow:hidden;}
+.chd{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 9px;cursor:pointer;user-select:none;}
+.chl{display:flex;align-items:center;gap:9px;}
+.cion{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.cnm{font-size:13px;font-weight:800;}
+.cct{font-size:10px;color:var(--mut);}
+.cchv{font-size:11px;color:var(--mut);transition:transform .25s;}
+.cchv.open{transform:rotate(180deg);}
+.cnet{font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;}
+.cnet.pos{background:var(--g);color:#fff;}
+.cnet.neg{background:var(--red);color:#fff;}
+.cbd{display:none;padding:0 12px 12px;border-top:1px solid #f3f4f6;}
+.cbd.open{display:block;}
+.stbs{display:flex;gap:5px;margin:9px 0 8px;overflow-x:auto;}
+.stb{flex-shrink:0;padding:4px 10px;border-radius:20px;border:2px solid #e5e7eb;background:#fff;font-size:10px;font-weight:700;color:var(--mut);cursor:pointer;}
+.stb.active{background:var(--g);color:#fff;border-color:var(--g);}
+.er{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid #f3f4f6;}
+.er:last-child{border-bottom:none;}
+.edot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.din{background:var(--g);}
+.dout{background:var(--red);}
+.eb{flex:1;min-width:0;}
+.enm{font-size:12px;font-weight:700;}
+.emt{font-size:10px;color:var(--mut);margin-top:1px;}
+.hbg{display:inline-flex;align-items:center;gap:3px;background:#f3f4f6;border-radius:6px;padding:2px 6px;font-size:10px;font-weight:700;color:var(--gd);margin-top:3px;}
+.eri{text-align:right;flex-shrink:0;}
+.eam{font-size:12px;font-weight:800;}
+.ain{color:var(--g);}
+.aout{color:var(--red);}
+.ebs{display:flex;gap:3px;margin-top:3px;justify-content:flex-end;}
+.bx{border:none;border-radius:5px;padding:3px 6px;font-size:10px;cursor:pointer;font-weight:700;}
+.bed{background:#e0f2fe;color:#0369a1;}
+.bdl{background:#fee2e2;color:var(--red);}
+.nbar{display:flex;align-items:center;justify-content:space-between;background:#f9fafb;border-radius:9px;padding:8px 12px;margin-top:8px;}
+.nbl{font-size:10px;color:var(--mut);font-weight:700;}
+.nbv{font-size:14px;font-weight:900;}
+.empty{text-align:center;padding:22px 14px;color:var(--mut);font-size:12px;}
+.ei{font-size:28px;margin-bottom:6px;}
+
+/* MODAL */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;align-items:flex-end;justify-content:center;}
+.mo.open{display:flex;}
+.modal{background:#fff;border-radius:20px 20px 0 0;padding:19px 16px 32px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;animation:su .25s ease;}
+@keyframes su{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mhd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.mtit{font-size:15px;font-weight:800;color:var(--gd);}
+.mcl{background:#f3f4f6;border:none;border-radius:8px;font-size:17px;cursor:pointer;padding:3px 8px;line-height:1.4;}
+
+.vn{background:#fef3c7;border:1px solid var(--gold);border-radius:9px;padding:8px 11px;font-size:11px;color:#92400e;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.sb{background:var(--card);border-radius:14px;padding:14px;box-shadow:var(--sh);margin-bottom:11px;}
+.mcr{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f3f4f6;font-size:12px;font-weight:700;}
+.mcr:last-child{border-bottom:none;}
+.ncr{display:flex;gap:6px;margin-top:10px;}
+.ncr input{flex:1;padding:8px 10px;border:2px solid #e5e7eb;border-radius:9px;font-family:'Nunito',sans-serif;font-size:12px;outline:none;}
+.ncr input:focus{border-color:var(--g);}
+.ncr button{background:var(--g);color:#fff;border:none;border-radius:9px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;}
+.ei2{width:42px!important;flex:none!important;text-align:center;font-size:16px;}
+.fab{position:fixed;bottom:19px;right:16px;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--gl));color:#fff;font-size:24px;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(26,122,74,.4);display:flex;align-items:center;justify-content:center;z-index:50;}
+.sbox{width:100%;padding:9px 12px;border:2px solid #e5e7eb;border-radius:11px;font-family:'Nunito',sans-serif;font-size:12px;margin-bottom:9px;background:#fff;outline:none;}
+.sbox:focus{border-color:var(--g);}
+
+/* OWNER PANEL */
+#ownerPanel{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:flex-end;justify-content:center;}
+#ownerPanel.open{display:flex;}
+.op{background:#1a1a2e;border-radius:22px 22px 0 0;padding:20px 16px 34px;width:100%;max-width:480px;max-height:95vh;overflow-y:auto;animation:su .25s ease;}
+.op h2{color:var(--gf);font-family:'Amiri',serif;font-size:20px;text-align:center;margin-bottom:3px;}
+.op>.sub{color:rgba(255,255,255,.5);font-size:11px;text-align:center;margin-bottom:16px;}
+.ob{background:rgba(255,255,255,.07);border-radius:12px;padding:13px;margin-bottom:11px;}
+.ob h4{color:var(--gf);font-size:12px;margin-bottom:10px;font-weight:800;}
+.oig label{color:rgba(255,255,255,.65);font-size:11px;font-weight:700;display:block;margin-bottom:3px;}
+.oig input,.oig select{width:100%;padding:9px 11px;border:2px solid rgba(255,255,255,.12);border-radius:9px;font-family:'Nunito',sans-serif;font-size:12px;color:#fff;background:rgba(255,255,255,.1);outline:none;margin-bottom:9px;}
+.oig input::placeholder{color:rgba(255,255,255,.35);}
+.obtn{width:100%;padding:11px;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:4px;}
+.obtn-g{background:linear-gradient(135deg,var(--g),var(--gl));color:#fff;}
+.obtn-cl{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);margin-top:8px;}
+.gcb{background:rgba(255,255,255,.1);border-radius:10px;padding:13px;text-align:center;margin-top:10px;display:none;}
+.gcb .code{font-size:20px;font-weight:900;color:var(--gf);letter-spacing:3px;margin:5px 0;}
+.gcb .ci{font-size:10px;color:rgba(255,255,255,.55);}
+.obtn-cp{background:rgba(255,255,255,.15);color:#fff;margin-top:8px;}
+.obtn-wa{background:#25d366;color:#fff;margin-top:6px;}
+.acr{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.05);border-radius:8px;padding:8px 10px;margin-bottom:5px;}
+.acr .acc{color:var(--gf);font-weight:800;letter-spacing:2px;font-size:12px;}
+.acr .aci{color:rgba(255,255,255,.45);font-size:10px;}
+.av{color:#86efac;font-weight:700;font-size:10px;}
+.ae{color:#fca5a5;font-weight:700;font-size:10px;}
+.comm-list .cl-row{background:rgba(255,255,255,.06);border-radius:8px;padding:9px 11px;margin-bottom:6px;}
+.cl-row .cl-name{color:#fff;font-size:13px;font-weight:700;}
+.cl-row .cl-info{color:rgba(255,255,255,.45);font-size:10px;margin-top:2px;}
+.cl-row .cl-status{font-size:10px;font-weight:700;}
+.oerr{color:#fca5a5;font-size:11px;text-align:center;margin-top:5px;display:none;}
+.hidden{display:none!important;}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="spinner"></div>
+  <p id="loaderText">Loading...</p>
+</div>
+
+<!-- SETUP -->
+<div id="setupScreen" class="screen">
+  <div class="slogo">🕌</div>
+  <div class="stitle">Community Setup</div>
+  <div class="ssub">Pehli baar — sirf ek baar</div>
+  <div class="card">
+    <h3>🏘️ Community Ka Naam</h3>
+    <div class="ig"><label>Gaon / Masjid Ka Naam</label><input type="text" id="setupName" placeholder="Jaise: Noor Masjid..."></div>
+    <div class="ig"><label>Username (login ke liye)</label><input type="text" id="setupUser" placeholder="apna username..."></div>
+    <div class="ig"><label>Password</label><input type="password" id="setupPass" placeholder="apna password..."></div>
+    <div class="ig"><label>Sheher (optional)</label><input type="text" id="setupCity" placeholder="Jaise: Lucknow..."></div>
+    <button class="btn btn-g" onclick="doSetup()">Register Karen →</button>
+    <p class="err" id="setupErr"></p>
+  </div>
+  <p class="lnk" onclick="showScreen('loginScreen')">← Pehle se account hai? Login Karen</p>
+</div>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="screen active">
+  <div class="slogo">🕌</div>
+  <div class="stitle">Community Finance</div>
+  <div class="ssub">Muslim Community Ka Paisa Manager</div>
+  <div class="card">
+    <h3>🔐 Admin Login</h3>
+    <div class="ig"><label>Username</label><input type="text" id="loginUser" placeholder="username..."></div>
+    <div class="ig"><label>Password</label><input type="password" id="loginPass" placeholder="password..."></div>
+    <button class="btn btn-g" onclick="doLogin()">Login Karen →</button>
+    <p class="err" id="loginErr">❌ Galat username ya password</p>
+  </div>
+  <p class="lnk" onclick="showScreen('viewerScreen')">👁️ Viewer Login</p>
+  <p class="lnk" onclick="showScreen('setupScreen')" style="margin-top:6px;">+ Nayi Community Register Karen</p>
+</div>
+
+<!-- VIEWER LOGIN -->
+<div id="viewerScreen" class="screen">
+  <div class="slogo">👁️</div>
+  <div class="stitle">Viewer Login</div>
+  <div class="ssub">Community members ke liye</div>
+  <div class="card">
+    <h3>Community ID aur Password</h3>
+    <div class="ig"><label>Community Username</label><input type="text" id="vUser" placeholder="community username..."></div>
+    <div class="ig"><label>Viewer Password</label><input type="password" id="vPass" placeholder="viewer password..."></div>
+    <button class="btn btn-g" onclick="doViewerLogin()">Andar Jayen →</button>
+    <p class="err" id="vErr">❌ Galat credentials</p>
+  </div>
+  <p class="lnk" onclick="showScreen('loginScreen')">← Admin Login</p>
+</div>
+
+<!-- SUBSCRIPTION -->
+<div id="subScreen" class="screen">
+  <div class="slogo">🔒</div>
+  <div class="stitle">Trial Khatam</div>
+  <div class="ssub">10 din ka free trial khatam hua</div>
+  <div class="card">
+    <div style="text-align:center">
+      <div class="sub-strike">₹1,999/mahina</div>
+      <div class="sub-price">₹999<span style="font-size:15px">/mahina</span></div>
+      <div class="sub-tag">🎉 50% OFF Launch Offer</div>
+    </div>
+    <div class="divider"></div>
+    <div class="steps">
+      <b>Payment Karen:</b><br>
+      1️⃣ WhatsApp karen neeche<br>
+      2️⃣ eSewa: <b>9707387671</b> par ₹999 bhejein<br>
+      3️⃣ Screenshot WhatsApp par bhejein<br>
+      4️⃣ Unlock code milega → yahan dalein
+    </div>
+    <button class="btn btn-wa" onclick="openWA()">💬 WhatsApp +977 9707387671</button>
+    <div class="ig" style="margin-bottom:8px;">
+      <label>Unlock Code</label>
+      <input type="text" id="subCode" placeholder="CF-XXXX-XXXX-1M" style="text-align:center;font-weight:800;letter-spacing:2px;text-transform:uppercase">
+    </div>
+    <button class="btn btn-d" onclick="tryUnlock()">🔓 Unlock Karen</button>
+    <p class="err" id="subErr">❌ Code galat ya expired</p>
+  </div>
+  <p class="lnk" onclick="showScreen('loginScreen')">🔑 Admin Login</p>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp">
+  <div class="hdr">
+    <div>
+      <h1 id="appTitle">🕌 Community Finance</h1>
+      <p id="appSub"></p>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <span class="rb" id="roleBadge">Viewer</span>
+      <button class="lbtn" onclick="logout()">🚪</button>
+    </div>
+  </div>
+  <div id="tbar" class="tbar hidden"></div>
+
+  <div class="tabs">
+    <button class="tb active" onclick="switchTab('overview',this)">🏠 Overview</button>
+    <button class="tb" onclick="switchTab('alltx',this)">📋 Entries</button>
+    <button class="tb" onclick="switchTab('settings',this)">⚙️ Settings</button>
+  </div>
+
+  <div class="sec" id="tab-overview">
+    <div id="vn" class="vn hidden">👁️ Viewer Mode — Sirf dekh sakte hain.</div>
+    <div id="catCards"></div>
+    <button class="abtn admin-only hidden" style="width:100%;padding:11px;margin-top:2px;" onclick="openAddModal()">+ Nayi Entry</button>
+  </div>
+
+  <div class="sec hidden" id="tab-alltx">
+    <input class="sbox" type="text" placeholder="🔍 Search..." oninput="renderAllTx(this.value)">
+    <div id="allTxList"></div>
+  </div>
+
+  <div class="sec hidden" id="tab-settings">
+    <div class="sb admin-only hidden">
+      <div class="stit" style="margin-bottom:11px;">🏘️ Community Info</div>
+      <div class="ig"><label>Naam</label><input type="text" id="sName"></div>
+      <div class="ig"><label>Sheher</label><input type="text" id="sCity"></div>
+      <button class="btn btn-g" style="padding:10px;" onclick="saveCommInfo()">✅ Save</button>
+    </div>
+    <div class="sb admin-only hidden">
+      <div class="stit" style="margin-bottom:11px;">👁️ Viewer Password</div>
+      <div class="ig"><label>Password set karen</label><input type="text" id="sVP" placeholder="Koi bhi password..."></div>
+      <button class="btn btn-g" style="padding:10px;" onclick="saveVP()">✅ Save</button>
+      <p style="font-size:10px;color:var(--mut);margin-top:6px;">💡 Yeh members ko share karen</p>
+    </div>
+    <div class="sb admin-only hidden">
+      <div class="stit" style="margin-bottom:9px;">📅 Subscription</div>
+      <div id="subStatus"></div>
+      <div class="ig" style="margin-top:10px;"><label>Unlock Code</label><input type="text" id="sCode" placeholder="CF-XXXX-XXXX-1M" style="text-transform:uppercase"></div>
+      <button class="btn btn-d" style="padding:10px;" onclick="tryUnlockSettings()">🔓 Unlock Karen</button>
+      <p class="err" id="sCodeErr">❌ Code galat ya expired</p>
+    </div>
+    <div class="sb">
+      <div class="stit" style="margin-bottom:11px;">📂 Categories</div>
+      <div id="catList"></div>
+      <div class="ncr admin-only hidden">
+        <input type="text" id="newEmoji" class="ei2" placeholder="🆕" maxlength="2">
+        <input type="text" id="newCatNm" placeholder="Nayi category...">
+        <button onclick="addCat()">+ Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="fab admin-only hidden" onclick="openAddModal()">+</button>
+
+<!-- ENTRY MODAL -->
+<div class="mo" id="entryMo">
+  <div class="modal">
+    <div class="mhd">
+      <div class="mtit" id="moTitle">💰 Nayi Entry</div>
+      <button class="mcl" onclick="closeMo()">✕</button>
+    </div>
+    <div class="ig"><label>Category</label><select id="mCat"></select></div>
+    <div class="ig"><label>Qism</label>
+      <select id="mType" onchange="updLbl()">
+        <option value="in">📥 Aaya (Income)</option>
+        <option value="out">📤 Gaya (Kharcha)</option>
+      </select>
+    </div>
+    <div class="ig"><label id="mNmLbl">Naam</label><input type="text" id="mNm" placeholder="Naam ya description..."></div>
+    <div class="ig"><label>Amount (₹)</label><input type="number" id="mAmt" placeholder="0"></div>
+    <div class="ig"><label>Date</label><input type="date" id="mDt"></div>
+    <div class="ig"><label>💼 Kiske Paas (optional)</label><input type="text" id="mHld" placeholder="Treasurer ke paas..."></div>
+    <div class="ig"><label>Notes (optional)</label><textarea id="mNts" rows="2" placeholder="Koi detail..."></textarea></div>
+    <button class="btn btn-g" onclick="saveEntry()" id="saveBtn">✅ Save Karen</button>
+  </div>
+</div>
+
+<!-- OWNER PANEL -->
+<div id="ownerPanel">
+  <div class="op">
+    <h2>👑 Owner Panel</h2>
+    <div class="sub">Sirf aap use karen — Communities manage karen</div>
+
+    <!-- Add Community -->
+    <div class="ob">
+      <h4>➕ Nayi Community Add Karen</h4>
+      <div class="oig">
+        <label>Community Naam</label>
+        <input type="text" id="ocName" placeholder="Noor Masjid Lucknow...">
+        <label>Username</label>
+        <input type="text" id="ocUser" placeholder="noor_masjid...">
+        <label>Password</label>
+        <input type="text" id="ocPass" placeholder="password123...">
+        <label>Sheher</label>
+        <input type="text" id="ocCity" placeholder="Lucknow...">
+        <label>Viewer Password</label>
+        <input type="text" id="ocVP" placeholder="viewer123...">
+        <label>Months (subscription)</label>
+        <select id="ocMonths">
+          <option value="1">1 Mahina — ₹999</option>
+          <option value="3">3 Mahine — ₹2,799</option>
+          <option value="6">6 Mahine — ₹5,199</option>
+          <option value="12">12 Mahine — ₹9,599</option>
+        </select>
+      </div>
+      <button class="obtn obtn-g" onclick="addCommunity()">➕ Community Add Karo + Code Generate Karo</button>
+      <div class="gcb" id="genBox">
+        <div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:3px;">Unlock Code:</div>
+        <div class="code" id="genCode">----</div>
+        <div class="ci" id="genInfo"></div>
+        <button class="obtn obtn-cp" onclick="copyCode()">📋 Copy Code</button>
+        <button class="obtn obtn-wa" onclick="shareWA()">💬 WhatsApp Bhejein</button>
+      </div>
+      <p class="oerr" id="ocErr"></p>
+    </div>
+
+    <!-- All Communities -->
+    <div class="ob">
+      <h4>🏘️ Sab Communities</h4>
+      <div class="comm-list" id="commList"></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="ob">
+      <h4>📊 Business Stats</h4>
+      <div id="ownerStats"></div>
+    </div>
+
+    <button class="obtn obtn-cl" onclick="closeOwner()">✕ Band Karen</button>
+  </div>
+</div>
+
+<script>
+// ================================================================
+// CONFIG
+// ================================================================
+const API = 'https://script.google.com/macros/s/AKfycbwb9Wb3Z-cRKZ_-bnBeCumXghQmYVCl3oRCrEeyFDNuHRjjrfU5KtHvWdrXbbnuorw/exec';
+const OWNER_PIN = '9707';
+const OWNER_KEY = 'CF@OWNER#9707!SECRET';
+const TRIAL_DAYS = 10;
+
+// ================================================================
+// STATE
+// ================================================================
+let currentComm = null; // {id, name, city, viewerPass}
+let isAdmin = false;
+let isOwner = false;
+let editingId = null;
+let cats = [];
+
+// Local storage helpers
+const LS = {
+  get: (k, fb=null) => { try { const v = localStorage.getItem(k); return v !== null ? JSON.parse(v) : fb; } catch { return fb; } },
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+
+// ================================================================
+// LOADER
+// ================================================================
+function showLoader(txt='Loading...') {
+  document.getElementById('loaderText').textContent = txt;
+  document.getElementById('loader').classList.add('active');
+}
+function hideLoader() {
+  document.getElementById('loader').classList.remove('active');
+}
+
+// ================================================================
+// API CALL
+// ================================================================
+async function api(data) {
+  const res = await fetch(API, {
+    method: 'POST',
+    body: JSON.stringify(data)
+  });
+  const json = await res.json();
+  return json;
+}
+
+// ================================================================
+// SCREENS
+// ================================================================
+function showScreen(id) {
+  ['setupScreen','loginScreen','viewerScreen','subScreen'].forEach(s => {
+    document.getElementById(s).classList.remove('active');
+  });
+  document.getElementById('mainApp').style.display = 'none';
+  document.getElementById(id).classList.add('active');
+}
+function showApp() {
+  ['setupScreen','loginScreen','viewerScreen','subScreen'].forEach(s => {
+    document.getElementById(s).classList.remove('active');
+  });
+  document.getElementById('mainApp').style.display = 'block';
+}
+
+// ================================================================
+// TRIAL / SUBSCRIPTION
+// ================================================================
+function getInstall() {
+  const k = 'cf6_install_' + (currentComm ? currentComm.id : 'x');
+  let d = LS.get(k, null);
+  if (!d) { d = new Date().toISOString(); LS.set(k, d); }
+  return new Date(d);
+}
+function trialLeft() {
+  const used = Math.floor((Date.now() - getInstall().getTime()) / 864e5);
+  return Math.max(0, TRIAL_DAYS - used);
+}
+function getExpiry() {
+  if (!currentComm) return null;
+  return LS.get('cf6_exp_' + currentComm.id, null);
+}
+function setExpiry(iso) {
+  LS.set('cf6_exp_' + currentComm.id, iso);
+}
+function isSubbed() {
+  const e = getExpiry();
+  return e && new Date(e) > new Date();
+}
+function subLeft() {
+  const e = getExpiry();
+  if (!e) return 0;
+  return Math.max(0, Math.ceil((new Date(e) - new Date()) / 864e5));
+}
+function canUse() {
+  return isAdmin || isOwner || trialLeft() > 0 || isSubbed();
+}
+
+// ================================================================
+// UNLOCK CODE
+// ================================================================
+function genCode(commId, months) {
+  const exp = new Date();
+  exp.setMonth(exp.getMonth() + parseInt(months));
+  const expTs = Math.floor(exp.getTime() / 1000);
+  const raw = commId + expTs + OWNER_KEY;
+  let h = 0;
+  for (let i = 0; i < raw.length; i++) { h = ((h << 5) - h) + raw.charCodeAt(i); h |= 0; }
+  const hs = Math.abs(h).toString(36).toUpperCase().padStart(6,'0').slice(0,6);
+  return `CF-${hs}-${expTs.toString(36).toUpperCase()}-${months}M`;
+}
+
+function verifyCode(code) {
+  code = code.trim().toUpperCase();
+  const p = code.split('-');
+  if (p.length !== 4 || p[0] !== 'CF') return null;
+  const [, hs, expStr, mp] = p;
+  if (!mp.endsWith('M')) return null;
+  try {
+    const expTs = parseInt(expStr, 36);
+    const months = parseInt(mp);
+    const exp = new Date(expTs * 1000);
+    if (isNaN(expTs) || isNaN(months)) return null;
+    if (exp < new Date()) return { valid: false, reason: 'Code expired hai' };
+    // Verify with current community id
+    const expected = genCode(currentComm.id, months);
+    if (code !== expected) return { valid: false, reason: 'Code galat hai' };
+    return { valid: true, expiry: exp.toISOString(), months };
+  } catch { return null; }
+}
+
+function tryUnlock() {
+  const code = document.getElementById('subCode').value;
+  const r = verifyCode(code);
+  const err = document.getElementById('subErr');
+  if (r && r.valid) {
+    setExpiry(r.expiry);
+    alert(`✅ ${r.months} mahine ke liye unlock!\nExpiry: ${new Date(r.expiry).toLocaleDateString('en-IN')}`);
+    startApp('Admin: ' + (currentComm.name || ''));
+  } else {
+    err.style.display = 'block';
+    err.textContent = '❌ ' + (r && r.reason ? r.reason : 'Code galat hai');
+  }
+}
+
+function tryUnlockSettings() {
+  const code = document.getElementById('sCode').value;
+  const r = verifyCode(code);
+  const err = document.getElementById('sCodeErr');
+  if (r && r.valid) {
+    setExpiry(r.expiry);
+    alert(`✅ Unlock! ${r.months} mahine valid.`);
+    renderSettings();
+  } else {
+    err.style.display = 'block';
+    err.textContent = '❌ ' + (r && r.reason ? r.reason : 'Code galat hai');
+  }
+}
+
+// ================================================================
+// SETUP (new community register)
+// ================================================================
+async function doSetup() {
+  const name = document.getElementById('setupName').value.trim();
+  const user = document.getElementById('setupUser').value.trim();
+  const pass = document.getElementById('setupPass').value.trim();
+  const city = document.getElementById('setupCity').value.trim();
+  const err = document.getElementById('setupErr');
+  if (!name || !user || !pass) { err.style.display='block'; err.textContent='❌ Sab fields zaroori hain!'; return; }
+  showLoader('Registering...');
+  try {
+    const id = 'comm_' + Date.now();
+    const res = await api({ action: 'addCommunity', id, username: user, password: pass, name, city, viewerPass: 'viewer123', expiry: '' });
+    hideLoader();
+    if (res.success) {
+      alert('✅ Community register ho gayi!\nAb login karen.');
+      showScreen('loginScreen');
+    } else {
+      err.style.display='block'; err.textContent='❌ Error. Dobara try karen.';
+    }
+  } catch(e) { hideLoader(); err.style.display='block'; err.textContent='❌ Network error!'; }
+}
+
+// ================================================================
+// LOGIN
+// ================================================================
+async function doLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  if (!user || !pass) return;
+  showLoader('Login ho raha hai...');
+  try {
+    const res = await api({ action: 'login', username: user, password: pass });
+    hideLoader();
+    if (res.success && res.data) {
+      currentComm = res.data;
+      isAdmin = true; isOwner = false;
+      if (!canUse()) { showScreen('subScreen'); return; }
+      startApp('Admin: ' + currentComm.name);
+    } else {
+      document.getElementById('loginErr').style.display = 'block';
+    }
+  } catch(e) { hideLoader(); alert('❌ Network error! Internet check karen.'); }
+}
+
+async function doViewerLogin() {
+  const user = document.getElementById('vUser').value.trim();
+  const pass = document.getElementById('vPass').value.trim();
+  showLoader('Login ho raha hai...');
+  try {
+    const res = await api({ action: 'login', username: user, password: pass });
+    hideLoader();
+    if (res.success && res.data) {
+      const comm = res.data;
+      if (pass === comm.viewerPass || document.getElementById('vPass').value === comm.viewerPass) {
+        // viewer login — check viewer password separately
+      }
+      // Actually check viewer pass
+      const vp = document.getElementById('vPass').value.trim();
+      if (vp !== comm.viewerPass) {
+        document.getElementById('vErr').style.display='block';
+        document.getElementById('vErr').textContent='❌ Galat viewer password';
+        return;
+      }
+      currentComm = comm;
+      isAdmin = false; isOwner = false;
+      if (!canUse()) { showScreen('subScreen'); return; }
+      startApp('Viewer');
+    } else {
+      document.getElementById('vErr').style.display = 'block';
+      document.getElementById('vErr').textContent = '❌ Community nahi mili';
+    }
+  } catch(e) { hideLoader(); alert('❌ Network error!'); }
+}
+
+function logout() {
+  currentComm = null; isAdmin = false; isOwner = false;
+  ['loginUser','loginPass','vUser','vPass'].forEach(id => { const e=document.getElementById(id); if(e) e.value=''; });
+  showScreen('loginScreen');
+}
+
+// ================================================================
+// START APP
+// ================================================================
+function startApp(label) {
+  showApp();
+  document.getElementById('appTitle').textContent = '🕌 ' + (currentComm.name || 'Community Finance');
+  document.getElementById('appSub').textContent = label;
+  const rb = document.getElementById('roleBadge');
+  if (isOwner) { rb.textContent='👑 Owner'; rb.className='rb owner'; }
+  else if (isAdmin) { rb.textContent='🔑 Admin'; rb.className='rb admin'; }
+  else { rb.textContent='👁️ Viewer'; rb.className='rb viewer'; }
+
+  document.querySelectorAll('.admin-only').forEach(el =>
+    (isAdmin || isOwner) ? el.classList.remove('hidden') : el.classList.add('hidden')
+  );
+  const vn = document.getElementById('vn');
+  (!isAdmin && !isOwner) ? vn.classList.remove('hidden') : vn.classList.add('hidden');
+
+  // Trial bar
+  const tb = document.getElementById('tbar');
+  if (isAdmin && !isSubbed() && trialLeft() > 0) {
+    tb.className = 'tbar trial';
+    tb.textContent = `⏳ Free Trial: ${trialLeft()} din bache — Phir ₹999/mahina`;
+    tb.classList.remove('hidden');
+  } else if (isAdmin && isSubbed()) {
+    tb.className = 'tbar sub';
+    tb.textContent = `✅ Subscribed — ${subLeft()} din bache`;
+    tb.classList.remove('hidden');
+  } else {
+    tb.classList.add('hidden');
+  }
+
+  document.getElementById('mDt').valueAsDate = new Date();
+  loadCats();
+  loadEntries();
+}
+
+// ================================================================
+// DEFAULT CATS
+// ================================================================
+function defaultCats() {
+  return [
+    {id:'juma',name:'Juma Collection',emoji:'🕌',deletable:false},
+    {id:'zakat',name:'Zakat',emoji:'🤲',deletable:false},
+    {id:'donation',name:'Donation',emoji:'💝',deletable:false},
+    {id:'death',name:'Intiqal Support',emoji:'🪦',deletable:false},
+    {id:'marriage',name:'Shadi',emoji:'💍',deletable:false},
+  ];
+}
+
+function loadCats() {
+  const k = 'cf6_cats_' + currentComm.id;
+  cats = LS.get(k, defaultCats());
+  renderCatSelect();
+}
+
+function saveCatsLocal() {
+  LS.set('cf6_cats_' + currentComm.id, cats);
+}
+
+// ================================================================
+// ENTRIES — Google Sheets
+// ================================================================
+let entries = [];
+
+async function loadEntries() {
+  showLoader('Data load ho raha hai...');
+  try {
+    const res = await api({ action: 'getEntries', communityId: currentComm.id });
+    hideLoader();
+    if (res.success) {
+      entries = res.data.map(r => ({
+        id: r[0], name: r[1], amount: parseFloat(r[2])||0,
+        date: r[3], catId: r[4], type: r[5],
+        holder: r[6], notes: r[7], createdAt: r[8]
+      })).filter(e => e.id);
+      renderOverview();
+    }
+  } catch(e) { hideLoader(); alert('❌ Data load nahi hua. Internet check karen.'); }
+}
+
+// ================================================================
+// OVERVIEW
+// ================================================================
+function renderOverview() {
+  const container = document.getElementById('catCards');
+  container.innerHTML = '';
+  const catBg = {juma:'#d1fae5',zakat:'#fef3c7',donation:'#dbeafe',death:'#e9d5ff',marriage:'#fce7f3'};
+  cats.forEach(cat => {
+    const ces = entries.filter(e => e.catId === cat.id);
+    const tin = ces.filter(e=>e.type==='in').reduce((s,e)=>s+e.amount,0);
+    const tout = ces.filter(e=>e.type==='out').reduce((s,e)=>s+e.amount,0);
+    const net = tin - tout;
+    const bg = catBg[cat.id] || '#f3f4f6';
+    const div = document.createElement('div');
+    div.className = 'cc';
+    div.innerHTML = `
+      <div class="chd" onclick="toggleCat('${cat.id}')">
+        <div class="chl">
+          <div class="cion" style="background:${bg}">${cat.emoji}</div>
+          <div><div class="cnm">${cat.name}</div><div class="cct">${ces.length} entries</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;">
+          <span class="cnet ${net>=0?'pos':'neg'}">₹${fmt(Math.abs(net))}</span>
+          <span class="cchv" id="ch-${cat.id}">▼</span>
+        </div>
+      </div>
+      <div class="cbd" id="cb-${cat.id}">
+        <div class="stbs">
+          <div class="stb active" onclick="cTab('${cat.id}','all',this)">Sab</div>
+          <div class="stb" onclick="cTab('${cat.id}','in',this)">📥 Aaya</div>
+          <div class="stb" onclick="cTab('${cat.id}','out',this)">📤 Gaya</div>
+        </div>
+        <div id="ce-${cat.id}-all">${renderEs(ces,'all')}</div>
+        <div id="ce-${cat.id}-in" class="hidden">${renderEs(ces,'in')}</div>
+        <div id="ce-${cat.id}-out" class="hidden">${renderEs(ces,'out')}</div>
+        <div class="nbar">
+          <div><div class="nbl">📥 Aaya</div><div style="font-size:12px;font-weight:800;color:var(--g)">₹${fmt(tin)}</div></div>
+          <div style="text-align:center"><div class="nbl">📤 Gaya</div><div style="font-size:12px;font-weight:800;color:var(--red)">₹${fmt(tout)}</div></div>
+          <div style="text-align:right"><div class="nbl">💰 Bacha</div><div class="nbv" style="color:${net>=0?'var(--g)':'var(--red)'}">₹${fmt(net)}</div></div>
+        </div>
+        ${(isAdmin||isOwner)?`<button class="abtn" style="width:100%;margin-top:8px;" onclick="openAddModal('${cat.id}')">+ Entry Add Karen</button>`:''}
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+function renderEs(es, filter) {
+  const f = filter==='all' ? es : es.filter(e=>e.type===filter);
+  const s = [...f].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if (!s.length) return `<div class="empty"><div class="ei">📭</div>Koi entry nahi</div>`;
+  return s.map(e=>`
+    <div class="er">
+      <div class="edot ${e.type==='in'?'din':'dout'}"></div>
+      <div class="eb">
+        <div class="enm">${e.name}</div>
+        <div class="emt">📅 ${fmtD(e.date)}</div>
+        ${e.holder?`<div class="hbg">💼 ${e.holder}</div>`:''}
+        ${e.notes?`<div class="emt">📝 ${e.notes}</div>`:''}
+      </div>
+      <div class="eri">
+        <div class="eam ${e.type==='in'?'ain':'aout'}">${e.type==='in'?'+':'-'}₹${fmt(e.amount)}</div>
+        ${(isAdmin||isOwner)?`<div class="ebs">
+          <button class="bx bed" onclick="editEntry('${e.id}')">✏️</button>
+          <button class="bx bdl" onclick="delEntry('${e.id}')">🗑️</button>
+        </div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function toggleCat(id) {
+  document.getElementById('cb-'+id).classList.toggle('open');
+  document.getElementById('ch-'+id).classList.toggle('open');
+}
+function cTab(cid, f, el) {
+  ['all','in','out'].forEach(x=>{const d=document.getElementById('ce-'+cid+'-'+x);if(d)d.classList.add('hidden');});
+  document.getElementById('ce-'+cid+'-'+f).classList.remove('hidden');
+  el.closest('.stbs').querySelectorAll('.stb').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ================================================================
+// ALL TX
+// ================================================================
+function renderAllTx(search='') {
+  const list = document.getElementById('allTxList');
+  let f = search ? entries.filter(e =>
+    e.name.toLowerCase().includes(search.toLowerCase()) ||
+    (e.notes||'').toLowerCase().includes(search.toLowerCase()) ||
+    (e.holder||'').toLowerCase().includes(search.toLowerCase())
+  ) : [...entries];
+  f.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if (!f.length) { list.innerHTML=`<div class="empty"><div class="ei">📭</div>Koi entry nahi</div>`; return; }
+  list.innerHTML = f.map(e => {
+    const cat = cats.find(c=>c.id===e.catId)||{name:'?',emoji:'❓'};
+    return `<div style="background:var(--card);border-radius:12px;padding:11px 12px;margin-bottom:8px;box-shadow:var(--sh);display:flex;align-items:flex-start;gap:8px;">
+      <div style="font-size:19px;margin-top:1px;">${cat.emoji}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12px;font-weight:800;">${e.name}</div>
+        <div style="font-size:10px;color:var(--mut);">📅 ${fmtD(e.date)} • ${cat.name}</div>
+        ${e.holder?`<div class="hbg" style="margin-top:2px;">💼 ${e.holder}</div>`:''}
+        ${e.notes?`<div style="font-size:10px;color:var(--mut);margin-top:2px;">📝 ${e.notes}</div>`:''}
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div class="eam ${e.type==='in'?'ain':'aout'}">${e.type==='in'?'+':'-'}₹${fmt(e.amount)}</div>
+        ${(isAdmin||isOwner)?`<div class="ebs" style="margin-top:4px;">
+          <button class="bx bed" onclick="editEntry('${e.id}')">✏️</button>
+          <button class="bx bdl" onclick="delEntry('${e.id}')">🗑️</button>
+        </div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ================================================================
+// ADD / EDIT / DELETE
+// ================================================================
+function renderCatSelect(sel='') {
+  const s = document.getElementById('mCat');
+  if (s) s.innerHTML = cats.map(c=>`<option value="${c.id}" ${c.id===sel?'selected':''}>${c.emoji} ${c.name}</option>`).join('');
+}
+function openAddModal(catId='') {
+  editingId = null;
+  document.getElementById('moTitle').textContent = '💰 Nayi Entry';
+  ['mNm','mHld','mNts'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mAmt').value='';
+  document.getElementById('mDt').valueAsDate=new Date();
+  document.getElementById('mType').value='in';
+  renderCatSelect(catId);
+  updLbl();
+  document.getElementById('entryMo').classList.add('open');
+}
+function updLbl() {
+  document.getElementById('mNmLbl').textContent =
+    document.getElementById('mType').value==='in' ? 'Naam / Kiske se aaya' : 'Kya kharcha hua';
+}
+function closeMo() { document.getElementById('entryMo').classList.remove('open'); }
+
+async function saveEntry() {
+  const name = document.getElementById('mNm').value.trim();
+  const amount = parseFloat(document.getElementById('mAmt').value);
+  const date = document.getElementById('mDt').value;
+  if (!name||!amount||!date) { alert('Naam, amount aur date zaroori hai!'); return; }
+  const entry = {
+    id: editingId || Date.now().toString(),
+    name, amount, date,
+    catId: document.getElementById('mCat').value,
+    type: document.getElementById('mType').value,
+    holder: document.getElementById('mHld').value.trim(),
+    notes: document.getElementById('mNts').value.trim(),
+    createdAt: new Date().toISOString(),
+    isEdit: !!editingId
+  };
+  document.getElementById('saveBtn').textContent = '⏳ Saving...';
+  document.getElementById('saveBtn').disabled = true;
+  try {
+    const res = await api({ action: 'saveEntry', communityId: currentComm.id, entry });
+    if (res.success) {
+      closeMo();
+      await loadEntries();
+    } else { alert('❌ Save nahi hua!'); }
+  } catch(e) { alert('❌ Network error!'); }
+  document.getElementById('saveBtn').textContent = '✅ Save Karen';
+  document.getElementById('saveBtn').disabled = false;
+}
+
+function editEntry(id) {
+  const e = entries.find(x=>x.id===id);
+  if (!e) return;
+  editingId = id;
+  document.getElementById('moTitle').textContent = '✏️ Edit Entry';
+  renderCatSelect(e.catId);
+  document.getElementById('mType').value = e.type;
+  document.getElementById('mNm').value = e.name;
+  document.getElementById('mAmt').value = e.amount;
+  document.getElementById('mDt').value = e.date;
+  document.getElementById('mHld').value = e.holder||'';
+  document.getElementById('mNts').value = e.notes||'';
+  updLbl();
+  document.getElementById('entryMo').classList.add('open');
+}
+
+async function delEntry(id) {
+  const e = entries.find(x=>x.id===id);
+  if (!e) return;
+  if (!confirm(`"${e.name}" delete karein?\n₹${fmt(e.amount)} — ${fmtD(e.date)}`)) return;
+  showLoader('Delete ho raha hai...');
+  try {
+    await api({ action: 'deleteEntry', communityId: currentComm.id, entryId: id });
+    await loadEntries();
+  } catch(e) { hideLoader(); alert('❌ Network error!'); }
+}
+
+// ================================================================
+// SETTINGS
+// ================================================================
+function switchTab(tab, btn) {
+  document.querySelectorAll('.sec').forEach(s=>s.classList.add('hidden'));
+  document.getElementById('tab-'+tab).classList.remove('hidden');
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if (tab==='alltx') renderAllTx('');
+  if (tab==='settings') renderSettings();
+}
+
+function renderSettings() {
+  if (currentComm) {
+    const sn = document.getElementById('sName'); if(sn) sn.value = currentComm.name||'';
+    const sc = document.getElementById('sCity'); if(sc) sc.value = currentComm.city||'';
+    const sv = document.getElementById('sVP'); if(sv) sv.value = currentComm.viewerPass||'';
+  }
+  const ss = document.getElementById('subStatus');
+  if (ss) {
+    if (isSubbed()) {
+      ss.innerHTML=`<div style="background:#d1fae5;border-radius:9px;padding:9px;font-size:12px;font-weight:700;color:#065f46;">✅ Subscribed — ${subLeft()} din bache</div>`;
+    } else if (trialLeft()>0) {
+      ss.innerHTML=`<div style="background:#fef3c7;border-radius:9px;padding:9px;font-size:12px;font-weight:700;color:#92400e;">⏳ Trial — ${trialLeft()} din bache</div>`;
+    } else {
+      ss.innerHTML=`<div style="background:#fee2e2;border-radius:9px;padding:9px;font-size:12px;font-weight:700;color:#991b1b;">🔒 Expired</div>`;
+    }
+  }
+  document.getElementById('catList').innerHTML = cats.map(cat=>`
+    <div class="mcr">
+      <span>${cat.emoji} ${cat.name}</span>
+      ${(isAdmin||isOwner)&&cat.deletable?`<button class="bx bdl" onclick="delCat('${cat.id}')">🗑️</button>`:'<span style="font-size:10px;color:var(--mut)">Default</span>'}
+    </div>`).join('');
+}
+
+function saveCommInfo() {
+  if (!currentComm) return;
+  currentComm.name = document.getElementById('sName').value.trim();
+  currentComm.city = document.getElementById('sCity').value.trim();
+  document.getElementById('appTitle').textContent = '🕌 ' + currentComm.name;
+  alert('✅ Save ho gaya!');
+}
+function saveVP() {
+  const p = document.getElementById('sVP').value.trim();
+  if (!p) { alert('Password khali nahi!'); return; }
+  if (currentComm) currentComm.viewerPass = p;
+  alert(`✅ Viewer password: "${p}"\nMembers ko share karen.`);
+}
+function addCat() {
+  const emoji = document.getElementById('newEmoji').value.trim()||'📁';
+  const name = document.getElementById('newCatNm').value.trim();
+  if (!name) { alert('Naam daalo!'); return; }
+  cats.push({id:'cat_'+Date.now(), name, emoji, deletable:true});
+  saveCatsLocal();
+  document.getElementById('newCatNm').value='';
+  document.getElementById('newEmoji').value='';
+  renderSettings(); renderOverview(); renderCatSelect();
+}
+function delCat(id) {
+  if (!confirm('Category delete karein?')) return;
+  cats = cats.filter(c=>c.id!==id);
+  entries = entries.filter(e=>e.catId!==id);
+  saveCatsLocal();
+  renderSettings(); renderOverview();
+}
+
+// ================================================================
+// OWNER PANEL
+// ================================================================
+let ownerAuth = false;
+
+function openOwner() {
+  if (!ownerAuth) {
+    const pin = prompt('👑 Owner PIN:');
+    if (pin !== OWNER_PIN) { alert('❌ Galat PIN'); return; }
+    ownerAuth = true;
+  }
+  renderOwnerPanel();
+  document.getElementById('ownerPanel').classList.add('open');
+}
+function closeOwner() { document.getElementById('ownerPanel').classList.remove('open'); }
+
+async function addCommunity() {
+  const name = document.getElementById('ocName').value.trim();
+  const user = document.getElementById('ocUser').value.trim();
+  const pass = document.getElementById('ocPass').value.trim();
+  const city = document.getElementById('ocCity').value.trim();
+  const vp = document.getElementById('ocVP').value.trim();
+  const months = document.getElementById('ocMonths').value;
+  const err = document.getElementById('ocErr');
+  if (!name||!user||!pass) { err.style.display='block'; err.textContent='❌ Naam, username, password zaroori!'; return; }
+  err.style.display='none';
+  const id = 'comm_' + Date.now();
+  const exp = new Date(); exp.setMonth(exp.getMonth()+parseInt(months));
+  showLoader('Adding community...');
+  try {
+    const res = await api({ action: 'addCommunity', id, username: user, password: pass, name, city, viewerPass: vp||'viewer123', expiry: exp.toISOString() });
+    hideLoader();
+    if (res.success) {
+      const code = genCode(id, months);
+      document.getElementById('genCode').textContent = code;
+      document.getElementById('genInfo').textContent = `${name} • ${months} mahina • Expiry: ${exp.toLocaleDateString('en-IN')}`;
+      document.getElementById('genBox').style.display = 'block';
+      // Store locally for stats
+      const all = LS.get('cf6_owner_comms', []);
+      all.push({id, name, user, months:parseInt(months), expiry:exp.toISOString(), code, createdAt:new Date().toISOString()});
+      LS.set('cf6_owner_comms', all);
+      renderOwnerPanel();
+    } else { err.style.display='block'; err.textContent='❌ Add nahi hua!'; }
+  } catch(e) { hideLoader(); err.style.display='block'; err.textContent='❌ Network error!'; }
+}
+
+function copyCode() {
+  const code = document.getElementById('genCode').textContent;
+  navigator.clipboard.writeText(code).then(()=>alert('✅ Copied!\n'+code)).catch(()=>prompt('Copy karo:',code));
+}
+function shareWA() {
+  const code = document.getElementById('genCode').textContent;
+  const info = document.getElementById('genInfo').textContent;
+  const msg = encodeURIComponent(`🕌 Community Finance — Unlock Code\n\n*${code}*\n\n${info}\n\nApp mein "Unlock Karen" mein yeh code dalein.\nJazakAllah!`);
+  window.open('https://wa.me/?text='+msg,'_blank');
+}
+
+function renderOwnerPanel() {
+  const all = LS.get('cf6_owner_comms', []);
+  const cl = document.getElementById('commList');
+  if (!all.length) { cl.innerHTML='<p style="color:rgba(255,255,255,.4);font-size:11px;text-align:center;">Koi community nahi</p>'; }
+  else {
+    cl.innerHTML = [...all].reverse().map(c=>{
+      const exp = new Date(c.expiry);
+      const active = exp > new Date();
+      return `<div class="cl-row">
+        <div class="cl-name">${c.name}</div>
+        <div class="cl-info">@${c.user} • ${c.months}M • ${exp.toLocaleDateString('en-IN')}</div>
+        <div class="cl-status ${active?'av':'ae'}">${active?'✅ Active':'❌ Expired'}</div>
+      </div>`;
+    }).join('');
+  }
+  const active = all.filter(c=>new Date(c.expiry)>new Date()).length;
+  const revenue = all.reduce((s,c)=>s+(c.months||1)*999,0);
+  document.getElementById('ownerStats').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+      <div style="background:rgba(255,255,255,.07);border-radius:9px;padding:10px;text-align:center;">
+        <div style="font-size:20px;font-weight:900;color:#86efac;">${active}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);">Active</div>
+      </div>
+      <div style="background:rgba(255,255,255,.07);border-radius:9px;padding:10px;text-align:center;">
+        <div style="font-size:20px;font-weight:900;color:var(--gf);">${all.length}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);">Total</div>
+      </div>
+      <div style="background:rgba(255,255,255,.07);border-radius:9px;padding:10px;text-align:center;grid-column:1/-1;">
+        <div style="font-size:20px;font-weight:900;color:var(--gf);">₹${revenue.toLocaleString('en-IN')}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.5);">Total Revenue</div>
+      </div>
+    </div>`;
+}
+
+// ================================================================
+// HELPERS
+// ================================================================
+function fmt(n) { return Number(n).toLocaleString('en-IN'); }
+function fmtD(d) {
+  if (!d) return '';
+  return new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+}
+function openWA() {
+  const msg = encodeURIComponent(`Assalam o Alaikum!\nCommunity Finance subscription lena hai.\neSewa 9707387671 par ₹999 bhejta hun.\nPlease unlock code dijiye.`);
+  window.open('https://wa.me/9779707387671?text='+msg,'_blank');
+}
+
+// Long press on title = owner panel
+let holdT = null;
+window.addEventListener('DOMContentLoaded', () => {
+  const ht = document.getElementById('appTitle');
+  if (ht) {
+    ht.addEventListener('touchstart', ()=>{ holdT=setTimeout(openOwner,3000); });
+    ht.addEventListener('touchend', ()=>clearTimeout(holdT));
+    ht.addEventListener('mousedown', ()=>{ holdT=setTimeout(openOwner,3000); });
+    ht.addEventListener('mouseup', ()=>clearTimeout(holdT));
+  }
+});
+
+document.getElementById('entryMo').addEventListener('click', function(e){if(e.target===this)closeMo();});
+document.getElementById('ownerPanel').addEventListener('click', function(e){if(e.target===this)closeOwner();});
+document.getElementById('loginPass').addEventListener('keydown', e=>{if(e.key==='Enter')doLogin();});
+</script>
+</body>
+</html>
